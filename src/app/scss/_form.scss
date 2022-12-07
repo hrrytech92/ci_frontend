@@ -1,0 +1,18 @@
+@import 'variables';
+
+input,
+textarea {
+  &.form-control {
+    // border-radius: 0;
+
+    &:focus {
+      border-color: $primary-green;
+    }
+    &.no-radius {
+      border-radius: 0;
+    }
+    &.is-invalid {
+      border-color: $dark-red;
+    }
+  }
+}

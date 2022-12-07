@@ -1,0 +1,10 @@
+.idea
+node_modules/
+dist/
+npm-debug.log
+coverage/
+.DS_Store
+yarn-error.log
+cypress/videos/*
+.env
+*.log

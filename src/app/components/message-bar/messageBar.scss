@@ -1,0 +1,35 @@
+@import "../../scss/variables";
+
+.message-bar-contain {
+  height: 55px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+  line-height: 35px;
+  width: 100%;
+  opacity: 0.9;
+  background: $primary-green;
+  padding: 0.6em;
+  transition: transform ease 0.2s;
+  transform: translateY(55px);
+  z-index: 9999;
+
+  &.danger {
+    background: $dark-red;
+  }
+
+  &.show {
+    transform: translateY(0);
+  }
+
+  .text {
+    color: $white;
+  }
+
+  .fa-times-circle-o {
+    font-size: 1.3em;
+    margin-left: 1em;
+    cursor: pointer;
+  }
+}

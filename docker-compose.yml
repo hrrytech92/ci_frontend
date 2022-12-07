@@ -1,0 +1,13 @@
+version: '3'
+services:
+  frontend:
+    build: .
+    environment:
+      ENV: development
+    image: ci_frontend
+    command: ./serve.sh
+    ports:
+      - "8080:8080"
+    volumes:
+     - .:/usr/src/app/
+    tty: true

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "module": "commonjs",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    // Import non-ES modules as default imports.
+    "esModuleInterop": true,
+    "lib": ["es7", "dom"],
+    "baseUrl": "src",
+    // renable this soon, but too many errors
+    //"strictNullChecks": true,
+    "paths": {
+      "app/*": ["app/*"]
+    }
+  },
+  "include": ["./src/**/*"]
+}

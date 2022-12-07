@@ -1,0 +1,109 @@
+{
+  "name": "ci_frontend",
+  "version": "1.0.0",
+  "description": "![alt text](https://github.com/CampaignInbox/ci_frontend/blob/master/frontend-page-flow.png)",
+  "main": "index.js",
+  "scripts": {
+    "clean:dist": "rm -rf dist",
+    "test": "sleep 60 && cypress run",
+    "build": "webpack-dev-server --env.API_URL $API_URL --env.SENTRY_DSN $SENTRY_DSN --env.SENTRY_ENV $ENVIRONMENT --config ./config/webpack.dev.config.js",
+    "build:prod": "webpack -p --define process.env.NODE_ENV='\"prod\"' --env.API_URL $API_URL --env.SENTRY_DSN $SENTRY_DSN --env.SENTRY_ENV $ENVIRONMENT --config ./config/webpack.prod.config.js && cp -a src/app/images dist/app",
+    "dist-template": "echo {\\\"API_URL\\\": \\\"${API_URL}\\\", \\\"SENTRY_DSN\\\": \\\"${SENTRY_DSN}\\\", \\\"SENTRY_ENV\\\": \\\"${ENVIRONMENT}\\\"} | mustache - dist/index.html.template dist/index.html",
+    "serve": "yarn dist-template && superstatic dist --port 8080 --host 0.0.0.0 --debug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CampaignInbox/ci_frontend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CampaignInbox/ci_frontend/issues"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,css,md,ts,tsx}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "homepage": "https://github.com/CampaignInbox/ci_frontend#readme",
+  "dependencies": {
+    "@babel/polyfill": "^7.2.5",
+    "@sentry/browser": "^4.5.2",
+    "autoprefixer": "^9.6.4",
+    "axios": "^0.16.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "css-loader": "^0.28.11",
+    "extract-text-webpack-plugin": "next",
+    "file-loader": "^1.1.5",
+    "history": "^4.7.2",
+    "immutability-helper": "^3.0.0",
+    "lodash": "^4.17.4",
+    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.21",
+    "mustache": "^2.3.0",
+    "node-sass": "^4.5.3",
+    "normalizr": "^3.3.0",
+    "postcss-flexbugs-fixes": "^3.3.0",
+    "postcss-loader": "^2.1.4",
+    "prettier": "^1.16.4",
+    "query-string": "^6.1.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-dropzone": "^4.2.3",
+    "react-redux": "^5.0.6",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-shadow": "^2.1.0",
+    "react-tinymce": "^0.7.0",
+    "redux": "^4.0.0",
+    "redux-form": "^7.4.2",
+    "redux-promise-middleware": "^4.4.1",
+    "redux-thunk": "^2.2.0",
+    "sass-loader": "^7.0.1",
+    "semantic-ui-calendar-react": "^0.14.4",
+    "semantic-ui-react": "^0.86.0",
+    "style-loader": "^0.21.0",
+    "styled-components": "^3.2.6",
+    "superstatic": "^5.0.1",
+    "tinymce": "^4.7.1",
+    "typescript": "^4.5.4",
+    "url-loader": "^0.6.2",
+    "webpack": "^4.14.0",
+    "webpack-cleanup-plugin": "^0.5.1"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.77",
+    "@types/moment-timezone": "^0.5.9",
+    "@types/node": "^8.0.33",
+    "@types/react": "^16.8.13",
+    "@types/react-dom": "^16.8.4",
+    "@types/react-redux": "^5.0.10",
+    "@types/react-router-dom": "^4.0.8",
+    "@types/redux": "^3.6.0",
+    "@types/redux-form": "^7.4.2",
+    "@types/redux-logger": "^3.0.4",
+    "@types/redux-promise-middleware": "^0.0.8",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "cypress": "^3.2.0",
+    "html-webpack-plugin": "^3.2.0",
+    "husky": "^1.3.1",
+    "lint-staged": "^8.1.5",
+    "react-addons-test-utils": "^0.14.8",
+    "react-test-renderer": "^16.0.0",
+    "redux-devtools-extension": "^2.13.8",
+    "ts-loader": "^5.3.3",
+    "tslint": "^5.7.0",
+    "typings": "^0.7.9",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
+  }
+}

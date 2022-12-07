@@ -1,0 +1,67 @@
+@import 'variables';
+
+$theme-colors: (
+  'primary': $primary-green,
+  'secondary': $light-grey2,
+);
+
+@import 'form';
+@import 'button';
+@import 'main';
+
+.app {
+  height: 100%;
+}
+
+.appBody {
+  height: 100%;
+  padding-top: 49px;
+}
+
+.pusherContent {
+  width: calc(100% - 150px);
+  padding: 23px 30px;
+}
+
+.pusherContentWide {
+  width: 100%;
+  padding: 23px 30px;
+}
+
+// position fixed on menu doesn't work without this
+.pushable {
+  transform: none !important;
+}
+
+.sidebarMenuOverride {
+  top: 49px !important;
+  z-index: 1;
+}
+
+// Remove when we've removed bootstrap.
+.bootstrapTableFix {
+  th {
+    border: 0;
+  }
+}
+
+.noLeftPadding {
+  padding-left: 0 !important;
+}
+
+.displayBlock {
+  display: block !important;
+}
+
+.bootstrapModalFix {
+  top: 50px;
+  margin: auto !important;
+}
+
+// Unset the CSS when displaying template preview
+.templateReset {
+  a {
+    color: blue;
+    text-decoration: underline !important;
+  }
+}

@@ -1,0 +1,16 @@
+.complete-lock {
+  position: relative;
+  &.locked {
+    .overlay {
+      position: absolute;
+      z-index: 1;
+      left: 0;
+      height: 100%;
+      opacity: 0.2;
+      cursor: not-allowed;
+      top: 0;
+      width: 100%;
+      background: white;
+    }
+  }
+}

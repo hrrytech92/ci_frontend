@@ -1,0 +1,30 @@
+@import 'variables';
+
+button {
+  outline: 0;
+  &:focus,
+  &:active {
+    box-shadow: none !important;
+    outline: 0 !important;
+  }
+  &.btn-danger {
+    border: 0;
+  }
+  &.btn-primary {
+    color: white;
+    border: 0;
+    background: $primary-green;
+
+    &.disabled {
+      background: $primary-green;
+    }
+
+    &:hover {
+      background: $primary-green-darker;
+    }
+  }
+  &.btn-secondary {
+    border: 0;
+    background: $light-grey2;
+  }
+}

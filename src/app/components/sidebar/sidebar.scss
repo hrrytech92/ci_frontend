@@ -1,0 +1,44 @@
+@import "../../scss/variables";
+
+#sidebar-contain {
+  width: 200px;
+  height: 100%;
+  position: fixed;
+  background: $dark-grey1;
+  transition: all ease 0.3s;
+  transform: translateX(-200px);
+  z-index: 1;
+
+  &.active {
+    transform: translateX(0);
+  }
+
+  nav {
+    ul.nav.main {
+      background: $dark-grey2;
+    }
+    .nav-item {
+      a {
+        color: $light-grey1;
+
+        &.active {
+          color: $dark-grey1;
+          background: $primary-green;
+          border-radius: 0;
+        }
+      }
+      .head {
+        border-radius: 0;
+        background: $black;
+        padding: 1.3em;
+      }
+     
+      ul.sub {
+        a {
+          padding: 0.7em 0 0.7em 2em;
+          font-size: 0.9em;
+        }
+      }
+    }
+  }
+}

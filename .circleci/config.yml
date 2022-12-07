@@ -1,0 +1,159 @@
+version: 2.1
+
+commands:
+  setup-steps:
+    description: "Base setup steps for each job"
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --no-cache \
+              curl \
+              ca-certificates \
+              make \
+              g++ \
+              jq \
+              py-pip \
+              wget \
+              gettext \
+              sudo \
+              jq
+            pip install \
+              awscli \
+              s3cmd \
+              python-magic \
+              docker-compose==1.12.0
+      - run:
+          name: Log into ECR
+          command: |
+            aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME}
+      - restore_cache:
+          keys:
+            - docker-{{ .Branch }}
+          paths:
+            - /caches/ciproject_frontend.tar
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker pull ${AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME}/ci_frontend:latest
+            docker load -i /caches/ciproject_frontend.tar | true
+            docker images
+
+  deploy:
+    description: "Deploy job"
+    parameters:
+      environment:
+        type: string
+    steps:
+      - run:
+          name: Install kubectl
+          command: |
+            wget https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl
+            chmod +x  /usr/local/bin/kubectl
+            wget https://amazon-eks.s3-us-west-2.amazonaws.com/1.11.5/2018-12-06/bin/linux/amd64/aws-iam-authenticator -O /usr/local/bin/aws-iam-authenticator
+            chmod +x /usr/local/bin/aws-iam-authenticator
+      - run:
+          name: Auth kubectl with environment
+          command: |
+            aws eks --region us-east-1 update-kubeconfig --name << parameters.environment >> --alias << parameters.environment >>
+            echo "<< parameters.environment >> deployments"
+            kubectl get deployments --context << parameters.environment >>
+      - run:
+          name: Trigger deployment
+          command: |
+            IMAGE="${AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME}/ci_frontend:${CIRCLE_SHA1}"
+            PATCH='{"spec":{"template":{"spec":{"containers":[{"name":"frontend","image":"'$IMAGE'"}]}}}}'
+            echo $PATCH
+            kubectl patch deployment frontend -p ''$PATCH''
+            kubectl rollout status -w deployment frontend
+executors:
+  default-executor:
+    docker:
+      - image: docker:17.09-git
+    working_directory: ~/ciproject
+
+jobs:
+  build-test:
+    executor: default-executor
+    steps:
+      - setup-steps
+      - run:
+          name: Build Docker images
+          command: |
+            docker-compose -f docker-compose.ci.yml build
+      - run:
+          name: Start Docker containers
+          command: |
+            docker-compose -f docker-compose.ci.yml up -d
+      - run:
+          name: List docker images
+          command: |
+            docker images
+      - run:
+          name: Run tests
+          command: |
+            docker-compose -f docker-compose.ci.yml exec frontend yarn test
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/ciproject_frontend.tar ciproject_frontend
+      - save_cache:
+          key: docker-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/ciproject_frontend.tar
+
+  push:
+    executor: default-executor
+    steps:
+      - setup-steps
+      - run:
+          name: Push Docker image
+          command: |
+              if [ "${CIRCLE_BRANCH}" = "master" ]; then
+                TAG="latest"
+              else
+                # Replace '/' with -
+                TAG=$(echo $CIRCLE_BRANCH | sed -e 's/\//-/g')
+              fi
+              docker tag ciproject_frontend ${AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME}/ci_frontend:${CIRCLE_SHA1} 
+              docker tag ciproject_frontend ${AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME}/ci_frontend:${TAG}
+              docker push ${AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME}/ci_frontend:${CIRCLE_SHA1}
+              docker push ${AWS_ECR_ACCOUNT_URL_ENV_VAR_NAME}/ci_frontend:${TAG}
+
+
+
+  deploy-prod:
+    executor: default-executor
+    steps:
+      - setup-steps
+      - deploy:
+          environment: Strongbox-main
+
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - build-test
+      - push:
+          requires:
+            - build-test
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+      - approve-prod-deploy:
+          type: approval
+          requires:
+            - push
+          filters:
+            branches:
+              only:
+                - master
+      - deploy-prod:
+          requires:
+            - approve-prod-deploy
