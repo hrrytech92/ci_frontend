@@ -1,0 +1,13 @@
+@import "../../scss/variables";
+
+.login-view {
+  background: $light-grey1;
+
+  .login-container {
+    margin: auto;
+
+    .login-wrap {
+      width: 280px;
+    }
+  }
+}
